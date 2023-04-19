@@ -1,0 +1,153 @@
+<style>
+  .link-grey {
+    color: #aaa;
+  }
+
+  .link-grey:hover {
+    color: #00913b;
+  }
+</style>
+
+<section style="background-color: #f7f6f6;">
+  <div class="container my-5 py-5 text-dark">
+    <div class="row d-flex justify-content-center">
+      <div class="col-md-12 col-lg-10 col-xl-8">
+        {% for comment in comments %}
+        <div class="accordion-item">
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="d-flex flex-start">
+                <img class="rounded-circle shadow-1-strong me-3"
+                  src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(26).webp" alt="avatar" width="40"
+                  height="40" />
+                <div class="w-100">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="text-primary fw-bold mb-0">
+                      {{comment.user}}
+                      <span class="text-dark ms-2">{{comment.content}}</span>
+                    </h6>
+                    <p class="mb-0 ms-2 align-self-start">{{comment.how_old}}</p>
+                  </div>
+                  <div>
+                    <p class="small mb-0" style="color: #aaa;">
+                    <div class="row">
+                      <div class="col">
+                          <button class="accordion-button collapsed link-grey" style="display:inline;width:auto;" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#s{{comment.id}}" aria-expanded="false" aria-controls="s{{comment.id}}">
+                            <span>view replies</span><span>({{comment.replies.all.count}})</span>
+                          </button>
+                      </div>
+                      <div class="col">
+                        <button style="border:none;background:transparent;" class="link-grey"
+                          onclick="reply('{{comment.user}}',{{comment.id}})">Reply</button>
+                      </div>
+                      <div class="col">
+                        <a href="#!" class="link-grey">Translate</a>
+                      </div>
+                    </div>
+                    </p>
+                    <div class="d-flex flex-row">
+                      <i class="fas fa-star text-warning me-2"></i>
+                      <i class="far fa-check-circle" style="color: #aaa;"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% for reply in comment.replies.all %}
+          <div id="s{{comment.id}}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body ms-5">
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="d-flex flex-start">
+                    <img class="rounded-circle shadow-1-strong me-3"
+                      src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(26).webp" alt="avatar" width="40"
+                      height="40" />
+                    <div class="w-100">
+                      <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-primary fw-bold mb-0">
+                          {{reply.user}}
+                          <span class="text-dark ms-2">{{reply.content}}</span>
+                        </h6>
+                        <p class="mb-0 align-self-start">{{reply.how_old}}</p>
+                      </div>
+                      <div>
+                        <p class="small mb-0" style="color: #aaa;">
+                        <div class="row">
+                          <div class="col">
+                            <button style="border:none;background:transparent;" class="link-grey"
+                          onclick="reply('{{comment.user}}',{{comment.id}})">Reply</button>
+                          </div>
+                          <div class="col">
+                            <a href="#!" class="link-grey">Translate</a>
+                          </div>
+                        </div>
+                        </p>
+                        <div class="d-flex flex-row">
+                          <i class="fas fa-star text-warning me-2"></i>
+                          <i class="far fa-check-circle" style="color: #aaa;"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {%endfor%}
+        </div>
+        {% endfor %}
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="d-flex flex-start">
+              <div class="w-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div class="container">
+                    <div class="row">
+                      <div class="col-12">
+                        <form action="/submitcomment#reply" method="post">
+                          {% csrf_token %}
+                          <div class="mb-3">
+                            <label for="comment_inp" id="reply" class="form-label text-muted">Add a Comment</label>
+                            <input type="text" name="comment" class="form-control" id="comment_inp"
+                              placeholder="Add a comment" required />
+                            <input type="text" name="reply_to" id="reply_to" hidden>
+                          </div>
+                          <div class="mb-3">
+                            <input type="submit" class="btn btn-primary" value="Add Comment" />
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+
+<script>
+let s = document.querySelectorAll(".accordion-button");
+  Array.from(s).forEach((e) => {
+    e.addEventListener("click", (i) => {
+      if (e.classList.contains("collapsed")) {
+        e.children[0].textContent = "view replies";
+      } else {
+        e.children[0].textContent = "hide replies";
+      }
+    });
+  });
+
+  function reply(user, comment_id) {
+    let textbox = document.getElementById("comment_inp");
+    let reply_id = document.getElementById("reply_to");
+    textbox.scrollIntoView();
+    textbox.value = "@" + user + " ";
+    reply_id.value = comment_id;
+    textbox.focus();
+  }
+</script>
